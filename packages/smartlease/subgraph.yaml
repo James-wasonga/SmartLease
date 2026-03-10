@@ -1,0 +1,108 @@
+specVersion: 0.0.4
+description: SmartLease Platform Subgraph
+repository: https://github.com/Lisk-RentToOwn/RentToOwn
+schema:
+  file: ./schema.graphql
+
+dataSources:
+  - kind: ethereum/contract
+    name: IdentityRegistry
+    network: lisk-sepolia-testnet
+    source:
+      address: "0x46527214308F17de4925Ce0A95d3631d6E15D163"
+      abi: IdentityRegistry
+      startBlock: 22208138
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - RoleAssignment
+      abis:
+        - name: IdentityRegistry
+          file: ./abis/IdentityRegistry.json
+      eventHandlers:
+        - event: RoleAssigned(indexed address,uint8)
+          handler: handleRoleAssigned
+      file: ./src/mapping.ts
+
+  - kind: ethereum/contract
+    name: PropertyToken
+    network: lisk-sepolia-testnet
+    source:
+      address: "0xDA938829b13B8287028C3541aBccb54b3c71cBB3"
+      abi: PropertyToken
+      startBlock: 22208588
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - PropertyTokenMint
+        - PropertyTokenTransfer
+      abis:
+        - name: PropertyToken
+          file: ./abis/PropertyToken.json
+      eventHandlers:
+        - event: PropertyTokenMinted(indexed uint256,indexed address,uint256,string)
+          handler: handlePropertyMinted
+        - event: PropertyTokenTransferred(indexed uint256,indexed address,indexed address,uint256)
+          handler: handlePropertyTransferred
+      file: ./src/mapping.ts
+
+  # - kind: ethereum/contract
+  #   name: RentPaymaster
+  #   network: lisk-sepolia
+  #   source:
+  #     address: "<PAYMASTER_ADDRESS>"
+  #     abi: RentPaymaster
+  #     startBlock: <START_BLOCK>
+  #   mapping:
+  #     kind: ethereum/events
+  #     apiVersion: 0.0.7
+  #     language: wasm/assemblyscript
+  #     entities:
+  #       - PaymentSponsored
+  #     abis:
+  #       - name: RentPaymaster
+  #         file: ./abis/RentPaymaster.json
+  #     eventHandlers:
+  #       - event: Withdrawn(indexed address,uint256)
+  #         handler: handleWithdrawn
+  #     file: ./src/mapping.ts
+
+  - kind: ethereum/contract
+    name: RentToOwn
+    network: lisk-sepolia-testnet
+    source:
+      address: "0x9253CA8FB6B5e1e5DA5791c0327859d5503707B8"
+      abi: RentToOwn
+      startBlock: 22208588
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - PropertyCreated
+        - RentPaidEvent
+        - EquityUpdated
+        - PropertyOccupied
+        - LandlordWithdrawal
+        - TokensTransferred
+      abis:
+        - name: RentToOwn
+          file: ./abis/RentToOwn.json
+      eventHandlers:
+        - event: PropertyCreated(indexed uint256,indexed address,uint256,uint256,uint256,string,string,string,string,string,string,string)
+          handler: handlePropertyCreated
+        - event: RentPaid(indexed uint256,indexed address,uint256)
+          handler: handleRentPaid
+        - event: EquityUpdated(indexed uint256,indexed address,uint256)
+          handler: handleEquityUpdated
+        - event: PropertyOccupied(indexed uint256,indexed address)
+          handler: handlePropertyOccupied
+        - event: LandlordWithdrawal(indexed address,indexed uint256,uint256)
+          handler: handleLandlordWithdrawal
+        - event: TokensTransferred(indexed uint256,indexed address,indexed address,uint256,uint256)
+          handler: handleTokensTransferred
+      file: ./src/mapping.ts

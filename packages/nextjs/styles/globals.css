@@ -1,0 +1,278 @@
+@import url("../public/fonts/circular/stylesheet.css");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root,
+[data-theme] {
+  background: oklch(var(--b3));
+}
+
+body {
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin-bottom: 0.5rem;
+  line-height: 1;
+}
+
+.btn {
+  @apply shadow-md;
+}
+
+.btn.btn-ghost {
+  @apply shadow-none;
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 221.21 83.19% 53.33%; /* HSL for #3B82F6 */
+    /* --primary: 270, 100%, 65%; */
+
+    --primary-foreground: 0 0% 100%; /* white text on blue button */
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+    --chart-1: 40 65% 58%;
+    --chart-2: 195 45% 53%;
+    --chart-3: 228 30% 38%;
+    --chart-4: 84 70% 75%;
+    --chart-5: 70 75% 70%;
+    --radius: 0.5rem;
+  }
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+    --chart-1: 264 75% 45%;
+    --chart-2: 162 60% 63%;
+    --chart-3: 70 75% 70%;
+    --chart-4: 304 85% 55%;
+    --chart-5: 16 80% 52%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  body {
+    font-family: "Circular Std", sans-serif !important;
+  }
+}
+
+@layer components {
+  .app-container {
+    @apply mx-auto w-full max-w-screen-2xl px-5 ipad:px-12 mini:px-16;
+  }
+
+  .content-container {
+    @apply mx-auto w-full max-w-screen-lg px-5 ipad:px-12 mini:px-16;
+  }
+}
+
+.text-gray {
+  color: #6b7280;
+  /* font-size: 0.75rem; */
+}
+
+.text-dark {
+  color: #111827;
+  font-weight: 600;
+}
+
+.color {
+  color: rgb(244, 109, 6);
+}
+
+.mini-card {
+  text-align: center;
+  padding: 0.4rem 0;
+  border-radius: 5%;
+}
+
+.mini-card-p {
+  color: #111827;
+  font-size: 1rem;
+  margin-top: 0.2rem;
+}
+
+.mini-card-icon {
+  margin: auto;
+  height: 3rem;
+  width: 3rem;
+  border-radius: 50%;
+  border: 0;
+  padding: 0.5rem;
+}
+
+.notfi-icon {
+  height: 2rem;
+  width: 2rem;
+  border-radius: 50%;
+  border: 0;
+  padding: 0.5rem;
+}
+
+.nofti-ul {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.nofti-p {
+  font-weight: 600;
+}
+
+.nofti-span {
+  font-weight: 400;
+}
+
+.text-gray-bold {
+  color: #6b7280;
+  /* font-size: 0.75rem; */
+  font-weight: 600;
+}
+
+.info-color-div {
+  display: grid;
+  grid-template-columns: 2fr;
+  /* align-items: center; */
+}
+
+.w-calend {
+  width: 20rem;
+}
+
+.bg-rd-green {
+  background-color: rgba(52, 211, 153, 0.2);
+  color: #34d399;
+}
+
+.bg-rd-red {
+  background-color: rgba(252, 165, 165, 0.4);
+  color: #f87171;
+}
+
+.bg-rd-purple {
+  background-color: rgba(216, 180, 254, 0.4);
+  color: #c084fc;
+}
+
+.bg-rd-blue {
+  background-color: rgba(147, 197, 253, 0.4);
+  color: #60a5fa;
+}
+
+.bg-rd-gray {
+  background-color: rgba(156, 163, 175, 0.2);
+  color: #9ca3af;
+}
+
+.card-hdr {
+  padding-bottom: 0.25rem;
+}
+
+.card-titl {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.value {
+  font-size: 1.5rem;
+  color: #111827;
+  font-weight: 700;
+}
+
+.timeBtn-On {
+  background-color: #34d399;
+  color: white;
+}
+
+.timeBtn-styl {
+  font-size: 0.8rem;
+  padding: 1px 1rem;
+}
+
+.timeBtn-Off {
+  background-color: rgba(156, 163, 175, 0.2);
+  color: #111827;
+}
+
+.equity-hd {
+  color: #111827;
+  font-weight: 600;
+  /* font-size: 1.1rem; */
+}
+
+.vest-stat-hd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+  padding: 0.5rem 24px;
+}
+
+.progress-green-fill > div {
+  background-color: #34d399;
+}
+
+.progress-red-fill > div {
+  background-color: #f87171;
+}
+
+.progress-purple-fill > div {
+  background-color: #c084fc;
+}
+
+.flex-jb-ic {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flex-ic {
+  display: flex;
+  align-items: center;
+}

@@ -1,0 +1,77 @@
+# IdentityRegistry
+type RoleAssignment @entity(immutable: false) {
+  id: ID!
+  user: Bytes!
+  role: Int!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+}
+
+# PropertyToken
+type PropertyTokenMint @entity(immutable: false) {
+  id: ID!
+  tokenId: BigInt!
+  landlord: Bytes!
+  amount: BigInt!
+  uri: String!
+}
+
+type PropertyTokenTransfer @entity(immutable: false) {
+  id: ID!
+  tokenId: BigInt!
+  from: Bytes!
+  to: Bytes!
+  amount: BigInt!
+}
+
+# RentToOwn
+type PropertyCreated @entity(immutable: false) {
+  id: ID!
+  propertyId: BigInt!
+  landlord: Bytes!
+  tokenId: BigInt!
+  value: BigInt!
+  duration: BigInt! # ← changed from Int! to BigInt!
+  name: String!
+  image: String!
+  propertyAddress: String!
+  city: String!
+  state: String!
+  zipCode: String!
+  currency: String!
+}
+type RentPaidEvent @entity(immutable: false) {
+  id: ID!
+  propertyId: BigInt!
+  tenant: Bytes!
+  amount: BigInt!
+}
+
+type EquityUpdated @entity(immutable: false) {
+  id: ID!
+  propertyId: BigInt!
+  tenant: Bytes!
+  newEquity: BigInt! # ← changed from Int! to BigInt!
+}
+
+type PropertyOccupied @entity(immutable: false) {
+  id: ID!
+  propertyId: BigInt!
+  tenant: Bytes!
+}
+
+type LandlordWithdrawal @entity(immutable: false) {
+  id: ID!
+  landlord: Bytes!
+  propertyId: BigInt!
+  amount: BigInt!
+}
+
+type TokensTransferred @entity(immutable: false) {
+  id: ID!
+  propertyId: BigInt!
+  from: Bytes!
+  to: Bytes!
+  tokenId: BigInt!
+  amount: BigInt!
+}

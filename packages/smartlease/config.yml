@@ -1,0 +1,4 @@
+networks:
+  lisk-sepolia-testnet:
+    chainId: 4202
+    rpc: "https://rpc.sepolia-api.lisk.com"

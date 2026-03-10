@@ -1,0 +1,125 @@
+🟩 A - usePropertyEvent(propertyId?)
+Purpose: Fetches the PropertyCreated event for a given property ID.
+Parameters:
+    propertyId: Optional property ID (number)
+Returns:
+    { data: PropertyEvent | undefined, loading: boolean, error: Error | null }
+Structure:
+    {
+        data: {
+            args: { propertyId: number, ... },
+            timestamp: number,
+            txHash: string,
+            ...
+        },
+        loading: boolean,
+        error: Error | null
+    }
+
+
+
+🟩 B - useTenantPayments(address?, propertyId?)
+Purpose: Fetches the tenant's rent payment history for a specific property.
+Parameters:
+    address: Wallet address (string)
+    propertyId: Property ID (number)
+Returns:
+    { data: Payment[], loading: boolean, error: Error | null }
+Structure:
+    {
+        data: [
+            {
+            date: Date,
+            amount: number,
+            txHash: string,
+            equityEarned: number,
+            propertyId: number,
+            sourceEvent: any
+            },
+            ...
+        ],
+        loading: boolean,
+        error: Error | null
+    }
+
+
+
+🟩 C - useTenantEquity(address?, propertyId?)
+Purpose: Tracks equity updates in real-time using EquityUpdated events.
+Parameters:
+    address: Wallet address (string)
+    propertyId: Property ID (number)
+Returns:
+    { data: { current: number, tier: EquityTier }, loading: boolean, error: Error | null }
+Structure:
+    {
+        data: {
+            current: number,
+            tier: EquityTier
+        },
+        loading: boolean,
+        error: Error | null
+    }
+
+
+🟩 D - useTenantRentStatus(payments, property)
+Purpose: Calculates rent status including next due date and if paid for the current month.
+Parameters:
+    payments: Array of tenant payments
+    property: PropertyEvent data
+Returns:
+    { data: RentStatus | undefined, loading: boolean, error: null }
+Structure:
+    {
+        data: {
+            nextPayment?: {
+            dueDate: Date,
+            amount: number
+            },
+            paidThisMonth: boolean
+        },
+        loading: boolean,
+        error: null
+    }
+
+
+-E  usePaymentCalendar(tenantAddress, propertyId)
+
+Purpose: Generates payment calendar
+Parameters:
+    tenantAddress: Wallet address (string)
+    propertyId: Property ID (number)
+Returns:
+    CalendarMonth[]: Array of payment months
+Structure:
+    [
+        { month: 'January', dueDate: Date, status: 'paid', txHash: '0x...' },
+        { month: 'February', dueDate: Date, status: 'due', txHash: null }
+    ]
+
+
+-F useEquityTimeline(tenantAddress, propertyId)
+    Purpose: Tracks equity changes over time
+
+Parameters:
+    tenantAddress: Wallet address (string)
+    propertyId: Property ID (number)
+Returns:
+    Array<{ date: Date, equity: number, tokens: number }>
+Structure:
+    [
+        { date: 2023-01-15, equity: 5, tokens: 500 },
+        { date: 2023-02-20, equity: 10, tokens: 1000 }
+    ]
+
+
+-D calculateNextPayment(payments, property)
+Purpose: Calculates next payment info
+
+Parameters:
+    payments: Payment history array
+    property: Property data object
+Returns:
+    { dueDate: Date, amount: number } | undefined
+Structure:
+    { dueDate: 2023-06-15, amount: 1200 }
