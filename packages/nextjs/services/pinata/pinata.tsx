@@ -1,199 +1,143 @@
-import { PinataSDK } from 'pinata'
-// import { ensureEthereumAvailable } from ".";
+import { PinataSDK } from "pinata";
 
 const pinata = new PinataSDK({
-    pinataJwt: process.env.NEXT_PUBLIC_PINATA_JWT,
-    pinataGateway: process.env.NEXT_PUBLIC_GATEWAY_URL
+  pinataJwt: process.env.NEXT_PUBLIC_PINATA_JWT,
+  pinataGateway: process.env.NEXT_PUBLIC_GATEWAY_URL,
 });
 
 export interface NFTMetadata {
-    name: string;
-    // description: string;
-    image: string;
-    attributes?: Array<{
-        trait_type: string;
-        value: string | number;
-    }>;
+  name: string;
+  image: string;
+  attributes?: Array<{
+    trait_type: string;
+    value: string | number | boolean;
+  }>;
 }
 
-export type CreatePropertyMetadata =  {
-    state: string;
-    propertY_name: string;
-    propertY_address: string;
-    city: string;
-    zip_code: string;
-    price: number;
-    duration: number;
-    currency: string;
-    flexible_payment: boolean;
+export type CreatePropertyMetadata = {
+  state: string;
+  propertY_name: string;
+  propertY_address: string;
+  city: string;
+  zip_code: string;
+  price: number;
+  duration: number;
+  currency: string;
+  flexible_payment: boolean;
+};
+
+/**
+ * Builds a valid IPFS gateway URL from a CID.
+ * Guards against undefined NEXT_PUBLIC_GATEWAY_URL.
+ */
+function buildGatewayUrl(cid: string): string {
+  const gateway = process.env.NEXT_PUBLIC_GATEWAY_URL;
+
+  if (!gateway) {
+    console.warn(
+      "⚠️  NEXT_PUBLIC_GATEWAY_URL is not set. " +
+        "Falling back to https://gateway.pinata.cloud. " +
+        "Set this in your .env.local file."
+    );
+    return `https://gateway.pinata.cloud/ipfs/${cid}`;
+  }
+
+  // Strip trailing slash to avoid double-slash in URL
+  const cleanGateway = gateway.replace(/\/$/, "");
+  return `${cleanGateway}/ipfs/${cid}`;
 }
 
-
-// export const uploadToIPFS = async (file: File): Promise<string> => {
-//     try {
-//         // Get presigned URL from your server
-//         const urlResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/presigned_url`, {
-//             method: "GET",
-//             headers: {
-//                 // Add your server authorization headers here
-//             }
-//         });
-
-//         console.log(urlResponse)
-//         const data = await urlResponse.json();
-
-//         // Upload file using presigned URL
-//         const upload = await pinata.upload.public
-//             .file(file)
-//             .url(data.url)
-//             // .keyvalues({
-//             //     user: address
-//             // });
-
-//         if (!upload.cid) {
-//             throw new Error('Upload failed - no CID returned');
-//         }
-
-//         // Convert CID to IPFS URL
-//         const ipfsUrl = await pinata.gateways.public.convert(upload.cid);
-//         return ipfsUrl;
-//     } catch (error) {
-//         console.error('Error uploading to IPFS:', error);
-//         throw new Error('Failed to upload to IPFS');
-//     }
-// };
-
-// NEW ONE
+/**
+ * Uploads an image file to IPFS via Pinata and returns the full gateway URL.
+ */
 export const uploadToIPFS = async (file: File): Promise<string> => {
-    try {
-      const upload = await pinata.upload.public.file(file);
-  
-      if (!upload.cid) {
-        throw new Error("Upload failed - no CID returned");
-      }
-  
-      const ipfsUrl = `${process.env.NEXT_PUBLIC_GATEWAY_URL}/ipfs/${upload.cid}`;
-  
-      return ipfsUrl;
-    } catch (error) {
-      console.error("Error uploading to IPFS:", error);
-      throw new Error("Failed to upload to IPFS");
+  if (!process.env.NEXT_PUBLIC_PINATA_JWT) {
+    throw new Error(
+      "NEXT_PUBLIC_PINATA_JWT is not set. Check your .env.local file."
+    );
+  }
+
+  try {
+    const upload = await pinata.upload.public.file(file);
+
+    if (!upload.cid) {
+      throw new Error("Upload failed - no CID returned from Pinata");
     }
-  };
 
+    const ipfsUrl = buildGatewayUrl(upload.cid);
+    console.log("✅ Image uploaded to IPFS:", ipfsUrl);
+    return ipfsUrl;
+  } catch (error) {
+    console.error("Error uploading to IPFS:", error);
+    throw new Error("Failed to upload image to IPFS");
+  }
+};
 
-// export const uploadMetadata = async (metadata: NFTMetadata, propertyMetadata: CreatePropertyMetadata): Promise<string> => {
-//     try {
-//         // Get presigned URL from your server
-//         const urlResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/presigned_url`, {
-//             method: "GET",
-//             headers: {
-//                 // Add your server authorization headers here
-//             }
-//         });
-//         const data = await urlResponse.json();
-
-//         // Convert metadata to File
-//         const metadataBlob = new Blob([JSON.stringify(metadata)], { type: 'application/json' });
-//         const metadataFile = new File([metadataBlob], 'metadata.json', { type: 'application/json' });
-
-//         // Upload metadata using presigned URL
-//         const upload = await pinata.upload.public
-//             .file(metadataFile)
-//             // .url(data.url)
-//             .keyvalues({
-//                 state: propertyMetadata.state,
-//                 propertY_name: propertyMetadata.propertY_name,
-//                 propertY_address: propertyMetadata.propertY_address,
-//                 city: propertyMetadata.city,
-//                 zip_code: propertyMetadata.zip_code,
-//                 price: `${propertyMetadata.price}`,
-//                 duration: `${propertyMetadata.duration}`,
-//                 currency: propertyMetadata.currency,
-//                 flexible_payment: `${propertyMetadata.flexible_payment}`
-//             });
-
-//         if (!upload.cid) {
-//             throw new Error('Upload failed - no CID returned');
-//         }
-
-//         // Convert CID to IPFS URL
-//         const ipfsUrl = await pinata.gateways.public.convert(upload.cid);
-//         return ipfsUrl;
-//     } catch (error) {
-//         console.error('Error uploading metadata to IPFS:', error);
-//         throw new Error('Failed to upload metadata to IPFS');
-//     }
-// }; 
-
-// NEW ONE
+/**
+ * Uploads NFT metadata JSON to IPFS via Pinata and returns the full gateway URL.
+ */
 export const uploadMetadata = async (
-    metadata: NFTMetadata,
-    propertyMetadata: CreatePropertyMetadata
-  ): Promise<string> => {
-    try {
-  
-      const metadataBlob = new Blob(
-        [
-          JSON.stringify({
-            ...metadata,
-            attributes: [
-              { trait_type: "city", value: propertyMetadata.city },
-              { trait_type: "state", value: propertyMetadata.state },
-              { trait_type: "zip_code", value: propertyMetadata.zip_code },
-              { trait_type: "price", value: propertyMetadata.price },
-              { trait_type: "duration", value: propertyMetadata.duration },
-              { trait_type: "currency", value: propertyMetadata.currency },
-              { trait_type: "flexible_payment", value: propertyMetadata.flexible_payment }
-            ]
-          })
-        ],
-        { type: "application/json" }
-      );
-  
-      const metadataFile = new File([metadataBlob], "metadata.json", {
-        type: "application/json"
-      });
-  
-      const upload = await pinata.upload.public.file(metadataFile);
-  
-      if (!upload.cid) {
-        throw new Error("Upload failed - no CID returned");
-      }
-  
-      const ipfsUrl = `${process.env.NEXT_PUBLIC_GATEWAY_URL}/ipfs/${upload.cid}`;
-  
-      return ipfsUrl;
-  
-    } catch (error) {
-      console.error("Error uploading metadata to IPFS:", error);
-      throw new Error("Failed to upload metadata to IPFS");
+  metadata: NFTMetadata,
+  propertyMetadata: CreatePropertyMetadata
+): Promise<string> => {
+  if (!process.env.NEXT_PUBLIC_PINATA_JWT) {
+    throw new Error(
+      "NEXT_PUBLIC_PINATA_JWT is not set. Check your .env.local file."
+    );
+  }
+
+  try {
+    const fullMetadata = {
+      ...metadata,
+      attributes: [
+        { trait_type: "city", value: propertyMetadata.city },
+        { trait_type: "state", value: propertyMetadata.state },
+        { trait_type: "zip_code", value: propertyMetadata.zip_code },
+        { trait_type: "price", value: propertyMetadata.price },
+        { trait_type: "duration", value: propertyMetadata.duration },
+        { trait_type: "currency", value: propertyMetadata.currency },
+        {
+          trait_type: "flexible_payment",
+          value: String(propertyMetadata.flexible_payment),
+        },
+      ],
+    };
+
+    const metadataBlob = new Blob([JSON.stringify(fullMetadata)], {
+      type: "application/json",
+    });
+    const metadataFile = new File([metadataBlob], "metadata.json", {
+      type: "application/json",
+    });
+
+    const upload = await pinata.upload.public.file(metadataFile);
+
+    if (!upload.cid) {
+      throw new Error("Metadata upload failed - no CID returned from Pinata");
     }
-  };
 
-// I did not take this is to consideration - so i am just fetching the NFTS from
-// IPFS via pinata. In the real world case, i'll need to retrieve this from the blockchain
+    const ipfsUrl = buildGatewayUrl(upload.cid);
+    console.log("✅ Metadata uploaded to IPFS:", ipfsUrl);
+    return ipfsUrl;
+  } catch (error) {
+    console.error("Error uploading metadata to IPFS:", error);
+    throw new Error("Failed to upload metadata to IPFS");
+  }
+};
 
-// https://example-gateway.mypinata.cloud/ipfs/{cid}
 export const fetchNftCollectionsFromPinata = async (address: string) => {
-    // await ensureEthereumAvailable();
-
-    console.log(address)
-
-    try{
-        const files = await pinata.files
-            .public
-            .list()
-            .keyvalues({
-                //@ts-ignore
-                user: address.address,
-                type: "nft-metadata"
-            })
-        
-        return files
-
-    } catch (error) {
-        console.error('Error getting NFT collections:', error);
-        throw new Error('Failed to retrieve user NFTs');
-    }
-}
+  try {
+    const files = await pinata.files
+      .public
+      .list()
+      .keyvalues({
+        // @ts-ignore
+        user: address,
+        type: "nft-metadata",
+      });
+    return files;
+  } catch (error) {
+    console.error("Error getting NFT collections:", error);
+    throw new Error("Failed to retrieve user NFTs");
+  }
+};
