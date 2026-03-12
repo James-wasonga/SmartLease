@@ -31,9 +31,10 @@ export function WalletWatcher() {
   }, [])
 
   const {
-    data: userRole, 
-    isSuccess: getRoleSuccess
-  } = useGetUserRole(address as Address)
+    data: userRole,
+    isSuccess: getRoleSuccess,
+    isError: getRoleError,
+  } = useGetUserRole(address as Address);
 
   useEffect(() => {
     if (!isConnected || !address || hasHandled) return;
@@ -48,9 +49,11 @@ export function WalletWatcher() {
       }
 
       const data = userRole;
-      if (getRoleSuccess && userRole !== undefined && userRole !== 0) {
+      // Treat contract revert or wrong network as "no role" (show role modal)
+      if (getRoleError) {
+        setShowRoleModal(true);
+      } else if (getRoleSuccess && userRole !== undefined && userRole !== 0) {
         setUserRole(roleEnumToString(data as RoleEnum));
-        // router.push(`/${result.role}`);
       } else {
         setShowRoleModal(true);
       }
@@ -83,16 +86,28 @@ export function WalletWatcher() {
   }, [isConnected, hasHandled, router]);
 
   const handleSelectRole = async (role: 'tenant' | 'landlord') => {
-   
     if (!address) return;
-    
+
     try {
-        const tx = await setRole({ args: [roleStringToEnum(role)] }); // <== pass args here
-        setTxHash(tx.hash); // wait for this tx
-        setUserRole(role)
-    } catch (err) {
-      const error = getParsedError(err)
-      toast.error(error)
+      const tx = await setRole({ args: [roleStringToEnum(role)] });
+      setTxHash(tx.hash);
+      setUserRole(role);
+    } catch (err: unknown) {
+      const errorMessage = getParsedError(err);
+      const fullError = JSON.stringify(err);
+      const errLower = (errorMessage + " " + fullError).toLowerCase();
+      const isAlreadySet = errLower.includes("role already set");
+      // setUserRole only reverts for "Role already set" or "Invalid role" (we pass valid enums).
+      // viem often omits the revert reason, so treat setUserRole revert as already registered.
+      const isSetUserRoleRevert = errLower.includes("setuserrole") && errLower.includes("revert");
+
+      if (isAlreadySet || isSetUserRoleRevert) {
+        setUserRole(role);
+        setShowRoleModal(false);
+        toast.success("You're already registered. Proceeding with your selection.");
+      } else {
+        toast.error(errorMessage);
+      }
     }
   };
 

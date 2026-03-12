@@ -227,15 +227,16 @@ export const Header = () => {
 
   const GeneralHeader = () => {
     return (
-      <>
-        <div className="py-4">
-          <img
-            src={'/logo-light_preview.png'}
-            alt="SmartLease"
-            className="h-12"
-          />
-        </div>
-      </>
+      <div className="flex items-center gap-3 py-4">
+        <img
+          src={'/logo.svg'}
+          alt="SmartLease Logo"
+          className="h-10 w-auto"
+        />
+        <span className="text-2xl font-bold tracking-tight text-blue-600">
+          SmartLease
+        </span>
+      </div>
     );
   };
 

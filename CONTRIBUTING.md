@@ -84,3 +84,7 @@ Once you submit your PR:
 - As you update your PR and apply changes, mark each conversation resolved.
 
 Once the PR is approved, we'll "squash-and-merge" to keep the git commit history clean.
+"How does rent to own work?"
+"What is a property token?"
+"Who pays the rent?"
+"Tell me about identity and landlords."

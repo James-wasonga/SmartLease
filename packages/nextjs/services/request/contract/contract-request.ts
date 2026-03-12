@@ -5,7 +5,7 @@ import {
 } from "./generic";
 import { RentToOwnABI } from "@/abi/RentToOwn";
 import { RenToOwnAddress } from "@/constants/contract-address";
-import { Address, useContractRead, useContractWrite } from "wagmi";
+import { Address, useAccount, useContractRead, useContractWrite } from "wagmi";
 
 export enum RoleEnum {
   None = 0,
@@ -150,14 +150,18 @@ export function useSetUserRole(
     })
 }
 
+/** Chain ID where IdentityRegistry is deployed (e.g. localhost). Only call getUserRole on this chain to avoid reverts on others. */
+const IDENTITY_REGISTRY_CHAIN_ID = 31337;
+
 export function useGetUserRole(user: Address) {
-  // console.log(genericContractRequestIdentityProvider.abi)
+  const { chain } = useAccount();
+  const isCorrectChain = chain?.id === IDENTITY_REGISTRY_CHAIN_ID;
+
   return useContractRead({
     ...genericContractRequestIdentityProvider,
     functionName: "getUserRole",
     args: [user],
-    // watch: true,
-    enabled: !!user,
+    enabled: !!user && !!isCorrectChain,
   });
 }
 

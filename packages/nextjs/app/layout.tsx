@@ -4,6 +4,8 @@ import "@/styles/globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
 import { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { AccessibilityWidget } from "@/components/AccessibilityWidget";
+import { ChatbotWidget } from "@/components/ChatbotWidget";
 
 const baseUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -62,7 +64,11 @@ const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
           defaultTheme="light"
           forcedTheme="light"
         >
-          <ScaffoldEthAppWithProviders>{children}</ScaffoldEthAppWithProviders>
+          <ScaffoldEthAppWithProviders>
+             {children}
+             <AccessibilityWidget />
+             <ChatbotWidget />
+          </ScaffoldEthAppWithProviders>
         </ThemeProvider>
       </body>
     </html>

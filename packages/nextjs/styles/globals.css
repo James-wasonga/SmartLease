@@ -276,3 +276,29 @@ h4 {
   display: flex;
   align-items: center;
 }
+
+
+/* High Contrast Accessibility Mode */
+body.high-contrast-mode {
+  background-color: #000 !important;
+  color: #fff !important;
+}
+
+body.high-contrast-mode * {
+  border-color: #fff !important;
+  background-color: #000 !important;
+  color: #fff !important;
+}
+
+body.high-contrast-mode a,
+body.high-contrast-mode button {
+  color: #ff0 !important;
+  border-color: #ff0 !important;
+}
+
+body.high-contrast-mode img,
+body.high-contrast-mode video,
+body.high-contrast-mode svg {
+  filter: grayscale(100%) contrast(120%) brightness(1.2) !important;
+}
+

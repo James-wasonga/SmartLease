@@ -63,23 +63,35 @@ export type CreatePropertyMetadata =  {
 //     }
 // };
 
-// NEW ONE
+/** Upload via our API route to avoid CORS and keep JWT server-side. */
+async function uploadFileViaApi(file: File): Promise<string> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const base = typeof window !== "undefined" ? window.location.origin : "";
+  const res = await fetch(`${base}/api/upload-ipfs`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: res.statusText }));
+    throw new Error(err.error ?? "Upload failed");
+  }
+
+  const { url } = await res.json();
+  if (!url) throw new Error("No URL returned from upload");
+  return url;
+}
+
 export const uploadToIPFS = async (file: File): Promise<string> => {
-    try {
-      const upload = await pinata.upload.public.file(file);
-  
-      if (!upload.cid) {
-        throw new Error("Upload failed - no CID returned");
-      }
-  
-      const ipfsUrl = `${process.env.NEXT_PUBLIC_GATEWAY_URL}/ipfs/${upload.cid}`;
-  
-      return ipfsUrl;
-    } catch (error) {
-      console.error("Error uploading to IPFS:", error);
-      throw new Error("Failed to upload to IPFS");
-    }
-  };
+  try {
+    return await uploadFileViaApi(file);
+  } catch (error) {
+    console.error("Error uploading to IPFS:", error);
+    throw new Error("Failed to upload to IPFS");
+  }
+};
 
 
 // export const uploadMetadata = async (metadata: NFTMetadata, propertyMetadata: CreatePropertyMetadata): Promise<string> => {
@@ -126,50 +138,39 @@ export const uploadToIPFS = async (file: File): Promise<string> => {
 //     }
 // }; 
 
-// NEW ONE
 export const uploadMetadata = async (
-    metadata: NFTMetadata,
-    propertyMetadata: CreatePropertyMetadata
-  ): Promise<string> => {
-    try {
-  
-      const metadataBlob = new Blob(
-        [
-          JSON.stringify({
-            ...metadata,
-            attributes: [
-              { trait_type: "city", value: propertyMetadata.city },
-              { trait_type: "state", value: propertyMetadata.state },
-              { trait_type: "zip_code", value: propertyMetadata.zip_code },
-              { trait_type: "price", value: propertyMetadata.price },
-              { trait_type: "duration", value: propertyMetadata.duration },
-              { trait_type: "currency", value: propertyMetadata.currency },
-              { trait_type: "flexible_payment", value: propertyMetadata.flexible_payment }
-            ]
-          })
-        ],
-        { type: "application/json" }
-      );
-  
-      const metadataFile = new File([metadataBlob], "metadata.json", {
-        type: "application/json"
-      });
-  
-      const upload = await pinata.upload.public.file(metadataFile);
-  
-      if (!upload.cid) {
-        throw new Error("Upload failed - no CID returned");
-      }
-  
-      const ipfsUrl = `${process.env.NEXT_PUBLIC_GATEWAY_URL}/ipfs/${upload.cid}`;
-  
-      return ipfsUrl;
-  
-    } catch (error) {
-      console.error("Error uploading metadata to IPFS:", error);
-      throw new Error("Failed to upload metadata to IPFS");
-    }
-  };
+  metadata: NFTMetadata,
+  propertyMetadata: CreatePropertyMetadata
+): Promise<string> => {
+  try {
+    const metadataBlob = new Blob(
+      [
+        JSON.stringify({
+          ...metadata,
+          attributes: [
+            { trait_type: "city", value: propertyMetadata.city },
+            { trait_type: "state", value: propertyMetadata.state },
+            { trait_type: "zip_code", value: propertyMetadata.zip_code },
+            { trait_type: "price", value: propertyMetadata.price },
+            { trait_type: "duration", value: propertyMetadata.duration },
+            { trait_type: "currency", value: propertyMetadata.currency },
+            { trait_type: "flexible_payment", value: propertyMetadata.flexible_payment },
+          ],
+        }),
+      ],
+      { type: "application/json" }
+    );
+
+    const metadataFile = new File([metadataBlob], "metadata.json", {
+      type: "application/json",
+    });
+
+    return await uploadFileViaApi(metadataFile);
+  } catch (error) {
+    console.error("Error uploading metadata to IPFS:", error);
+    throw new Error("Failed to upload metadata to IPFS");
+  }
+};
 
 // I did not take this is to consideration - so i am just fetching the NFTS from
 // IPFS via pinata. In the real world case, i'll need to retrieve this from the blockchain

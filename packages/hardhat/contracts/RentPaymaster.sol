@@ -3,6 +3,7 @@
 pragma solidity ^0.8.17;
 
 import "@account-abstraction/contracts/interfaces/IEntryPoint.sol";
+import "@account-abstraction/contracts/core/EntryPoint.sol";
 import "@account-abstraction/contracts/core/BasePaymaster.sol";
 import "@account-abstraction/contracts/interfaces/PackedUserOperation.sol";
 import "@account-abstraction/contracts/core/UserOperationLib.sol";
@@ -27,7 +28,7 @@ contract RentPaymaster is BasePaymaster {
         IEntryPoint _entryPoint,
         address _rentToOwn,
         address _identityRegistry
-    ) BasePaymaster(_entryPoint) Ownable(msg.sender){
+    ) BasePaymaster(_entryPoint) {
         rentToOwnContract = _rentToOwn;
         identityRegistry = IIdentityRegistry(_identityRegistry);
 
