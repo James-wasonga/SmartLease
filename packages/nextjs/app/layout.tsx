@@ -1,3 +1,5 @@
+import { AccessibilityWidget } from "@/components/AccessibilityiWidget";
+import { ChatbotWidget } from "@/components/ChatbotWidget";
 import { ScaffoldEthAppWithProviders } from "@/components/ScaffoldEthAppWithProviders";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import "@/styles/globals.css";
@@ -62,7 +64,11 @@ const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
           defaultTheme="light"
           forcedTheme="light"
         >
-          <ScaffoldEthAppWithProviders>{children}</ScaffoldEthAppWithProviders>
+          <ScaffoldEthAppWithProviders>
+            {children}
+            <AccessibilityWidget />
+             <ChatbotWidget />
+          </ScaffoldEthAppWithProviders>
         </ThemeProvider>
       </body>
     </html>
